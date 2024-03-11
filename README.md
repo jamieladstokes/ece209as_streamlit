@@ -1,10 +1,12 @@
 
-  # Bookify
+  # Bookify - Streamlit Version 
 
-  Note: Please ensure you have installed <code><a href="https://nodejs.org/en/download/">nodejs</a></code>
+  Note: Please ensure you have installed Streamlit. 
+
+  Additional Dependencies: openai library (& associated API key).
 
   To preview and run the project on your device:
   1) Open project folder in <a href="https://code.visualstudio.com/download">Visual Studio Code</a>
-  2) In the terminal, run `npm install`
-  3) Run `npm start` to view project in browser
+  2) In the terminal, run `streamlit run Home.py'
+  3) View project in browser
   
