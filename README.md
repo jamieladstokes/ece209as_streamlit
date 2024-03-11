@@ -1,7 +1,8 @@
 
   # Bookify - Streamlit Version 
 
-  Note: Please ensure you have installed Streamlit. 
+  Note: Please ensure you have installed Streamlit (pip install streamlit). Some users have reported issues when running outside of a virtual environment. I'm running it in a conda virtual 
+        environment to be safe.  
 
   Additional Dependencies: openai library (& associated API key).
 
