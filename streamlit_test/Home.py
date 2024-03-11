@@ -5,6 +5,7 @@ OPENAI_API_KEY = "YOUR API KEY"
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 
+# initializing the session_state vars 
 if 'name' not in st.session_state: 
     st.session_state.name = 'Bob'
 
@@ -17,10 +18,11 @@ if 'genres' not in st.session_state:
 if 'recommendations' not in st.session_state:
     st.session_state.recommendations = []
     
-# st.rerun()
+
 st.title("Bookify!")
 
 
+# Updated Profile Info 
 container1_home = st.container(border=True)
 
 def refreshInfo():
@@ -32,6 +34,7 @@ def refreshInfo():
 container1_home.button('Refresh User Info', on_click=refreshInfo)
 
 
+# Get Book Recommendation Titles 
 container2_home = st.container(border=True)
 container2_home.header('Book Recommendations')
 
@@ -53,6 +56,8 @@ def getRecommendations():
 
 container2_home.button('Get Recommendations', on_click=getRecommendations)
 
+
+# Get Summaries of Recommendations 
 container3_home = st.container(border=True)
 
 def getSummaries():
