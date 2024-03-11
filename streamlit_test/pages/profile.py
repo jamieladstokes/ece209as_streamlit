@@ -24,6 +24,7 @@ genre_options = ["Children's", 'Christian', 'Classics', 'Comics', 'Fantasy', 'Hi
                 'Mystery', 'Romance', 'Science Fiction', 'Thriller', 'Travel', 'Young Adult']
 
 
+# update favorite genres list 
 def updateGenres():
     st.session_state.genres.append(genre_selection)
     # st.session_state.genres = list(itertools.chain.from_iterable(st.session_state.genres))
