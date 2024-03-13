@@ -1,7 +1,7 @@
 import streamlit as st
 from openai import OpenAI
 
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 # initializing the session_state vars
@@ -68,6 +68,7 @@ def getRecommendations():
                     {"role": "assistant", "content": "I see all of the books that you have read here: \n{st.session_state.pastbooks} and will use them to base my recommendation off of when you ask. "},
                     {"role": "user", "content": "Now, please look at my age here: \n{st.session_state.age} and use that as a basis reading comprehension and look for books that are \n{st.session_state.goal} based on that age. "},
                     {"role": "assistant", "content": "I see your age here: \n{st.session_state.age} and will make my recommendation based on your goal of \n{st.session_state.goal}. I will also use your selections in the {st.session_state.genres} genres when I make the recommendation."},
+                    {"role": "user", "content": "Please do not suggest any of the books in the list here: \n{st.session_state.pastbooks} These are books that either have already been recommended or read."},
                     {"role": "user", "content": question},
                     {"role": "user", "content": 'Please describe using 3 bullet points, one sentence each, why you are recommending these books. You should not make up details about the book that are not true.'},
                     {"role": "assistant", "content": 'I will make your recommendations!'},
