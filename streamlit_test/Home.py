@@ -1,7 +1,7 @@
 import streamlit as st
 from openai import OpenAI
 
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 # initializing the session_state vars
@@ -24,6 +24,8 @@ if 'liked_recommendation' not in st.session_state:
 if 'pastbooks' not in st.session_state:
     st.session_state.pastbooks = []
 
+if 'dislikes' not in st.session_state:
+    st.session_state.dislikes = []
 if 'goal' not in st.session_state:
     st.session_state.goal = 'Just my Level'
 
@@ -52,29 +54,31 @@ container1_home.button('Refresh User Info', on_click=refreshInfo)
 container2_home = st.container(border=True)
 container2_home.header('Book Recommendations')
 
+# Container for feedback input
+feedback_container = st.empty()
 
 def getRecommendations():
     if "openai_model" not in st.session_state:
         st.session_state["openai_model"] = "gpt-3.5-turbo"
 
-    #question = "hi"
-    question = f"I like to read a lot and am interested in books that are \n{st.session_state.goal}. Sometimes I have a hard time figuring out the next book I should be reading, but have an idea for the genres I'm interested in. Since I generally have liked books I've read in the past, I'd like to use those books as a model for the books I should read next. Please use my \n{st.session_state.pastbooks} list and recommend 3 books from the following genres: {st.session_state.genres}. If you don't have any recommendations, please say 'I don't know'. Don't make recommendations from those i've read in the past."
-            
+    # question = "hi"
+    question = f"I like to read a lot and am interested in books that are \n{st.session_state.goal}. Sometimes I have a hard time figuring out the next book I should be reading, but have an idea for the genres I'm interested in. Since I generally have liked books I've read in the past, I'd like to use those books as a model for the books I should read next. Please use my \n{st.session_state.pastbooks} list and recommend 3 books from the following genres: {st.session_state.genres}. If you don't have any recommendations, please say 'I don't know'. Don't make recommendations from those I've read in the past."
+
     response = client.chat.completions.create(
         model=st.session_state["openai_model"],
         messages=[
-                    {"role": "system", "content": "You are a helpful assistant that recommends 3 books to read based on how challenging the books are"},
-                    {"role": "user", "content": "Please look at all of the books that I have previously read here: \n{st.session_state.pastbooks}"},
-                    {"role": "assistant", "content": "I see all of the books that you have read here: \n{st.session_state.pastbooks} and will use them to base my recommendation off of when you ask. "},
-                    {"role": "user", "content": "Now, please look at my age here: \n{st.session_state.age} and use that as a basis reading comprehension and look for books that are \n{st.session_state.goal} based on that age. "},
-                    {"role": "assistant", "content": "I see your age here: \n{st.session_state.age} and will make my recommendation based on your goal of \n{st.session_state.goal}. I will also use your selections in the {st.session_state.genres} genres when I make the recommendation."},
-                    {"role": "user", "content": "Please do not suggest any of the books in the list here: \n{st.session_state.pastbooks} These are books that either have already been recommended or read."},
-                    {"role": "user", "content": question},
-                    {"role": "user", "content": 'Please describe using 3 bullet points, one sentence each, why you are recommending these books. You should not make up details about the book that are not true.'},
-                    {"role": "assistant", "content": 'I will make your recommendations!'},
-                    {"role": "user", "content": 'Give me a book recommendations that are \n{st.session_state.goal} '},
-            ],
-        temperature=0.4
+            {"role": "system", "content": "You are a helpful assistant that recommends 3 books to read based on how challenging the books are"},
+            {"role": "user", "content": "Please look at all of the books that I have previously read here: \n{st.session_state.pastbooks}"},
+            {"role": "assistant", "content": "I see all of the books that you have read here: \n{st.session_state.pastbooks} and will use them to base my recommendation off of when you ask. "},
+            {"role": "user", "content": "Now, please look at my age here: \n{st.session_state.age} and use that as a basis reading comprehension and look for books that are \n{st.session_state.goal} based on that age. "},
+            {"role": "assistant", "content": "I see your age here: \n{st.session_state.age} and will make my recommendation based on your goal of \n{st.session_state.goal}. I will also use your selections in the {st.session_state.genres} genres when I make the recommendation."},
+            {"role": "user", "content": "Do not suggest any of the books in the list here: \n{st.session_state.pastbooks} These are books that either have already been recommended or read."},
+            {"role": "user", "content": question},
+            {"role": "user", "content": 'Please describe using 3 bullet points, one sentence each, why you are recommending these books. You should not make up details about the book that are not true.'},
+            {"role": "assistant", "content": 'I will make your recommendations!'},
+            {"role": "user", "content": 'Give me a book recommendations that are \n{st.session_state.goal} '},
+        ],
+        temperature=0.7
     )
 
     st.session_state.recommendations = response.choices[0].message.content
@@ -82,27 +86,28 @@ def getRecommendations():
 
     # Add buttons for liking and disliking the recommendation
     liked_button = container2_home.button('Did you like the recommendation?', on_click=toggleLikedRecommendation)
-    disliked_button = container2_home.button('Did you dislike the recommendation?',
-                                             on_click=toggleDislikedRecommendation)
+    disliked_button = container2_home.button('Did you dislike the recommendation?', on_click=toggleDislikedRecommendation)
 
     # If user disliked the recommendation, provide a text input for feedback
     if st.session_state.liked_recommendation is False:
-        feedback_container = st.empty()
         st.session_state.feedback_text = feedback_container.text_input(
             "Provide feedback on why you didn't like the recommendation:")
         st.session_state.feedback_text = st.session_state.feedback_text.strip()
         if st.session_state.feedback_text:
             feedback_container.write(f"Feedback received: {st.session_state.feedback_text}")
-
+    else:
+        # Clear the feedback text if the user liked the recommendation
+        st.session_state.feedback_text = ""
 
 def toggleLikedRecommendation():
     st.session_state.liked_recommendation = True
+    st.session_state.pastbooks.extend(st.session_state.recommendations.split(', '))
     st.success('Thank you for your positive feedback! 😊')
-
 
 def toggleDislikedRecommendation():
     st.session_state.liked_recommendation = False
-
+    st.session_state.dislikes.extend(st.session_state.recommendations.split(', '))
+    st.success('Thank you for your feedback. We will not suggest this book again')
 
 container2_home.button('Get Recommendations', on_click=getRecommendations)
 
@@ -117,7 +122,7 @@ def getSummaries():
     summary_prompt = f"""You are a helpful assistant that provides summaries of books from a list. 
                 Provide summaries for the following books, without major spoilers: {st.session_state.recommendations}. 
                 Do not make up details or hallucinate.
-                After each summary, provide a difficulty rating for each book."""
+                After each summary provide a difficulty rating for each book."""
 
     response = client.chat.completions.create(
         model=st.session_state["openai_model"],
